@@ -316,11 +316,12 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
             requestPermission()
             findViewById<Button>(R.id.buttonRuntimePermission).visibility = View.GONE
         }
+        //running buttons
         else if(id == R.id.buttonRunning) {
             setContentView(R.layout.running)
+            timeSet()
             runningtimerSet(view)
         }
-        //running buttons
         else if(id == R.id.runningbuttonplay) {
             if(findViewById<ImageView>(R.id.runningPlay).visibility == View.VISIBLE) {
                 findViewById<ImageView>(R.id.runningPlay).visibility = View.GONE
@@ -348,11 +349,12 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
                 runningelapsedTime = 0
             },50)
         }
+        //timer buttons
         else if(id == R.id.buttonStopwatch) {
             setContentView(R.layout.timer)
             timeSet()
+            timeSet()
         }
-        //timer buttons
         else if(id == R.id.Timerbuttonplay) {
             if(findViewById<ImageView>(R.id.TimerPlay).visibility == View.VISIBLE) {
                 findViewById<ImageView>(R.id.TimerPlay).visibility = View.GONE
@@ -383,10 +385,12 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
         //user button
         else if(id == R.id.buttonUser) {
             setContentView(R.layout.user)
+            timeSet()
         }
         //settings button
         else if(id == R.id.buttonSettings) {
             setContentView(R.layout.settings)
+            timeSet()
         }
         //back button, temp for now
         else if(id == R.id.tempback1) {
