@@ -72,6 +72,8 @@
 
                                 <Button
                                     android:id="@+id/settingsbutton1"
+                                    android:backgroundTint="@color/darkgray"
+                                    android:textColor="@color/white"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:elevation="-2dp"
@@ -93,7 +95,6 @@
                                     android:cropToPadding="false"
                                     android:elevation="2dp"
                                     android:foreground="@drawable/multilayerreset"
-                                    android:onClick="onClick"
                                     android:scaleX=".5"
                                     android:scaleY=".7"
                                     app:layout_constraintBottom_toBottomOf="parent"
@@ -109,12 +110,14 @@
 
                                 <Button
                                     android:id="@+id/settingsbutton2"
+                                    android:backgroundTint="@color/darkgray"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:elevation="-2dp"
                                     android:gravity="center_horizontal|top"
                                     android:text="Notifications"
                                     android:textSize="18dp"
+                                    android:textColor="@color/white"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"

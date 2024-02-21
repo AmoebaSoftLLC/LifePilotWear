@@ -19,6 +19,7 @@
 
     <Button
         android:id="@+id/buttonRuntimePermission"
+        android:backgroundTint="@color/darkgray"
         android:layout_width="140dp"
         android:layout_height="71dp"
         android:clickable="true"

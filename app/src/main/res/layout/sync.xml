@@ -18,8 +18,10 @@
             android:gravity="center"
             android:onClick="onClick"
             android:text="Sync"
+            android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="40sp"
+            android:backgroundTint="@color/purple"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -82,10 +84,12 @@
 
                             <Button
                                 android:id="@+id/workoutbutton1"
+                                android:backgroundTint="@color/darkgray"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:gravity="center_horizontal|top"
                                 android:text="Dumbbell Curls"
+                                android:textColor="@color/white"
                                 android:elevation="-2dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -178,10 +182,12 @@
 
                             <Button
                                 android:id="@+id/workoutbutton2"
+                                android:backgroundTint="@color/darkgray"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:gravity="center_horizontal|top"
                                 android:text="Bench Press"
+                                android:textColor="@color/white"
                                 android:elevation="-2dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
