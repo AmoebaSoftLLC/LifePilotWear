@@ -160,8 +160,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         setContent {
             setContentView(R.layout.home)
             sensorMethod()
-            gestureDetector = GestureDetector(this, this)
-
             //Google Sign In variables using dummy parameters for now
             gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.server_client_id)).requestEmail().build()
@@ -170,6 +168,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             user = mAuth!!.getCurrentUser() //is null if user is not signed in
             account = GoogleSignIn.getLastSignedInAccount(this) //is null if user is not signed in
         }
+        //gesture
+        gestureDetector = GestureDetector(this, this)
         //Sensor Requirements
         mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         mHeartRateSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
@@ -191,7 +191,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     //Update Sensor UI with PageViewer from Sensor Updates
     private fun sensorMethod() {
             setContentView(R.layout.home)
-            //gestureDetector = GestureDetector(this, this)
             //permission recheck on load
             if (ContextCompat.checkSelfPermission(this, PERMISSION_BODY_SENSORS)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -400,7 +399,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else if(id == R.id.buttonUser) {
             setContentView(R.layout.user)
             timeSet()
-            gestureDetector = GestureDetector(this, this)
         }
         //settings button
         else if(id == R.id.buttonSettings) {
@@ -413,10 +411,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             sensorMethod()
         }
     }
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        gestureDetector.onTouchEvent(event)
+        return super.dispatchTouchEvent(event)
+    }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
-        when (event?.action){
+        when (event.action){
             0->
             {
                 x1 = event.x
