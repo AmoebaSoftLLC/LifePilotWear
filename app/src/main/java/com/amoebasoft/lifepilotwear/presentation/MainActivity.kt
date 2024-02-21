@@ -18,6 +18,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,6 +36,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.abs
 
 class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListener, GestureDetector.OnGestureListener {
 
@@ -71,6 +73,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     private var runningisRunning = false
     //back button
     private var backvariable = false
+    //gesture data
+    lateinit var gestureDetector: GestureDetector
+    var x2:Float = 0.0f
+    var x1:Float = 0.0f
+    var y2:Float = 0.0f
+    var y1:Float = 0.0f
+    companion object {
+        const val MIN_DISTANCE = 150
+    }
     //sensor permission data
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -149,6 +160,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         setContent {
             setContentView(R.layout.home)
             sensorMethod()
+            gestureDetector = GestureDetector(this, this)
 
             //Google Sign In variables using dummy parameters for now
             gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -402,27 +414,76 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         }
     }
 
-    override fun onDown(p0: MotionEvent): Boolean {
-        TODO("Not yet implemented")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        gestureDetector.onTouchEvent(event)
+
+        when (event?.action){
+
+
+            0->
+            {
+                x1 = event.x
+                y1 = event.y
+            }
+
+            1->
+            {
+                x2 = event.x
+                y2 = event.y
+
+                val valueX:Float = x2-x1
+                val valueY:Float = y2-y1
+
+                if(abs(valueX) > MIN_DISTANCE)
+                {
+                    if (x2 > x1)
+                    {
+                        Toast.makeText(this,"Right swipe", Toast.LENGTH_SHORT).show()
+                    }
+                    else
+                    {
+                        Toast.makeText(this,"Left swipe", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else if (abs(valueY) > MIN_DISTANCE)
+                {
+                    if(y2 > y1)
+                    {
+                        Toast.makeText(this, "Bottom Swipe", Toast.LENGTH_SHORT).show()
+                    }
+                    else
+                    {
+                        Toast.makeText(this,"Top swipe", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            }
+        }
+
+        return super.onTouchEvent(event)
     }
 
-    override fun onShowPress(p0: MotionEvent) {
-        TODO("Not yet implemented")
+    override fun onDown(e: MotionEvent?): Boolean {
+        return false
     }
 
-    override fun onSingleTapUp(p0: MotionEvent): Boolean {
-        TODO("Not yet implemented")
+    override fun onShowPress(e: MotionEvent?) {
+        //TODO("Not yet implemented")
     }
 
-    override fun onScroll(p0: MotionEvent?, p1: MotionEvent, p2: Float, p3: Float): Boolean {
-        TODO("Not yet implemented")
+    override fun onSingleTapUp(e: MotionEvent?): Boolean {
+        return false
     }
 
-    override fun onLongPress(p0: MotionEvent) {
-        TODO("Not yet implemented")
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+        return false
     }
 
-    override fun onFling(p0: MotionEvent?, p1: MotionEvent, p2: Float, p3: Float): Boolean {
-        TODO("Not yet implemented")
+    override fun onLongPress(e: MotionEvent?) {
+        //TODO("Not yet implemented")
+    }
+
+    override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
+        return false
     }
 }
