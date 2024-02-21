@@ -3,6 +3,7 @@ package com.amoebasoft.lifepilotwear.presentation
 import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.graphics.drawable.GradientDrawable
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -18,8 +19,6 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -313,18 +312,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         if(id == R.id.buttonSync) {
             findViewById<Button>(R.id.buttonSync).visibility = View.GONE
             findViewById<FrameLayout>(R.id.workoutstart).visibility = View.VISIBLE
+            val gradientDrawable = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 60f
+            }
+            gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.darkgray))
+            findViewById<Button>(R.id.workoutbutton1).background = gradientDrawable
+            findViewById<Button>(R.id.workoutbutton2).background = gradientDrawable
         }
         else if(id == R.id.checkbutton1) {
-            findViewById<Button>(R.id.workoutbutton1).setBackgroundColor(getResources().getColor(R.color.passGreen))
+            editButtonInfo(findViewById<Button>(R.id.workoutbutton1), true)
         }
         else if(id == R.id.xbutton1) {
-            findViewById<Button>(R.id.workoutbutton1).setBackgroundColor(getResources().getColor(R.color.deleteRed))
+            editButtonInfo(findViewById<Button>(R.id.workoutbutton1), false)
         }
         else if(id == R.id.checkbutton2) {
-            findViewById<Button>(R.id.workoutbutton2).setBackgroundColor(getResources().getColor(R.color.passGreen))
+            editButtonInfo(findViewById<Button>(R.id.workoutbutton2), true)
         }
         else if(id == R.id.xbutton2) {
-            findViewById<Button>(R.id.workoutbutton2).setBackgroundColor(getResources().getColor(R.color.deleteRed))
+            editButtonInfo(findViewById<Button>(R.id.workoutbutton2), false)
         }
         else if(id == R.id.buttonRuntimePermission) {
             requestPermission()
@@ -410,6 +416,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else {
             sensorMethod()
         }
+    }
+
+    fun editButtonInfo(view: View, check:Boolean){
+        val gradientDrawable = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = 60f
+        }
+        if (check) {gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.passGreen))}
+        else {gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.deleteRed))}
+        view.background = gradientDrawable
     }
 
     //on touch events for gesturing
