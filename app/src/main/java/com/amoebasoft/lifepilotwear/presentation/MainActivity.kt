@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     //gesture data
     lateinit var gestureDetector: GestureDetector
     private val sensorHandler = Handler(Looper.getMainLooper())
+    private val backHandler = Handler(Looper.getMainLooper())
     var x2:Float = 0.0f
     var x1:Float = 0.0f
     var y2:Float = 0.0f
@@ -486,10 +487,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         isRunning = false
                         runningisRunning = false
                         //go to home after delay with transition slide
-                        window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
-                        val slide: Transition = Slide(Gravity.RIGHT)
-                        TransitionManager.go(homeAnimation, slide)
-                        timeSet()
+                        sensorHandler.postDelayed({
+                            window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
+                            val slide: Transition = Slide(Gravity.RIGHT)
+                            TransitionManager.go(homeAnimation, slide)
+                            timeSet()
+                        }, 50)
                         sensorHandler.postDelayed({
                             sensorMethod()
                         }, 700)
