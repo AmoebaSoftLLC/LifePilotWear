@@ -319,6 +319,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.darkgray))
             findViewById<Button>(R.id.workoutbutton1).background = gradientDrawable
             findViewById<Button>(R.id.workoutbutton2).background = gradientDrawable
+            findViewById<Button>(R.id.workoutcompletebutton).background = gradientDrawable
+            val gradientDrawable2 = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 60f
+            }
+            gradientDrawable2.setColor(ContextCompat.getColor(this@MainActivity, R.color.royalPurple))
+            findViewById<Button>(R.id.finishbutton).background = gradientDrawable2
         }
         else if(id == R.id.checkbutton1) {
             editButtonInfo(findViewById<Button>(R.id.workoutbutton1), true)
@@ -331,6 +338,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         }
         else if(id == R.id.xbutton2) {
             editButtonInfo(findViewById<Button>(R.id.workoutbutton2), false)
+        }
+        else if(id == R.id.finishbutton) {
+            findViewById<Button>(R.id.buttonSync).visibility = View.VISIBLE
+            findViewById<FrameLayout>(R.id.workoutstart).visibility = View.GONE
         }
         else if(id == R.id.buttonRuntimePermission) {
             requestPermission()

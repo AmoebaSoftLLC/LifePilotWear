@@ -274,6 +274,47 @@
                                 app:layout_constraintTop_toTopOf="parent" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/workout3"
+                            android:layout_width="match_parent"
+                            android:layout_height="115dp">
+
+                            <Button
+                                android:id="@+id/workoutcompletebutton"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center_horizontal|top"
+                                android:text="Workout Complete"
+                                android:textSize="20dp"
+                                android:textColor="@color/white"
+                                android:elevation="-2dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginBottom="5dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <Button
+                                android:id="@+id/finishbutton"
+                                android:layout_width="85dp"
+                                android:layout_height="36dp"
+                                android:layout_marginTop="55dp"
+                                android:clickable="true"
+                                android:elevation="10dp"
+                                android:onClick="onClick"
+                                android:paddingTop="3dp"
+                                android:paddingBottom="5dp"
+                                android:text="Finish"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="@+id/workout3"
+                                app:layout_constraintStart_toStartOf="@+id/workout3"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
                 </ScrollView>
             </androidx.constraintlayout.widget.ConstraintLayout>
