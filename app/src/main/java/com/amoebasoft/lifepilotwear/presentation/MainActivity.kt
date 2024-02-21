@@ -3,6 +3,7 @@ package com.amoebasoft.lifepilotwear.presentation
 import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -106,7 +107,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         if (event != null) {
             if (event.sensor.type == Sensor.TYPE_HEART_RATE) {
                 ViewPagerAdapter.heartRateSensorValue = event.values[0]
-                //sensorMethod()
+                sensorMethod()
             }
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                 val currentTimeNs = System.nanoTime()
@@ -131,7 +132,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         stepCount++
                         lastStepTimeNs = currentTimeNs
                         ViewPagerAdapter.accelSensorValue = stepCount
-                        //sensorMethod()
+                        sensorMethod()
                     }
                 }
             }
@@ -240,9 +241,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             }
             if(backvariable) {
                 backvariable = false
-                //not working still
-                //ViewPagerAdapter.screencheck = 2
-                //viewPager.currentItem = 2
                 viewPager.setCurrentItem(2, false)
             }
             timeSet()
@@ -425,7 +423,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else if(id == R.id.buttonUser) {
             setContentView(R.layout.user)
             timeSet()
-            //homeAnimation = Scene.getSceneForLayout(findViewById(R.id.userlayout), R.layout.quickdata, this);
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.userlayout), R.layout.buttonsfake, this);
         }
         //settings button
         else if(id == R.id.buttonSettings) {
@@ -482,13 +480,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         backvariable = true
                         isRunning = false
                         runningisRunning = false
-                        //go to home after delay
-                        //transition slide
-                        /*val slide: Transition = Slide(Gravity.RIGHT)
-                        TransitionManager.go(homeAnimation, slide)*/
+                        //go to home after delay with transition slide
+                        window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
+                        val slide: Transition = Slide(Gravity.RIGHT)
+                        TransitionManager.go(homeAnimation, slide)
+                        timeSet()
                         sensorHandler.postDelayed({
                             sensorMethod()
-                        }, 50)
+                        }, 800)
                     }
                     else
                     {

@@ -23,7 +23,6 @@ class ViewPagerAdapter (
         var accelSensorValue: Int = 0
         var calBurned: Float = 0f
         var extraCal: Float = 0f
-        var screencheck: Int = 0
     }
     //Create ViewPager
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerViewHolder {
@@ -36,11 +35,6 @@ class ViewPagerAdapter (
     }
     override fun onBindViewHolder(holder: ViewPagerViewHolder, position: Int) {
         val curImage = images[position]
-/*
-        if(curImage == 2 && screencheck == 2) {
-            active = R.layout.buttons
-            //curImage = images[2]
-        }*/
 
         //Main screens to slide on
         val activeLayoutRes = when (curImage) {
