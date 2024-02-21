@@ -358,6 +358,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             setContentView(R.layout.running)
             timeSet()
             runningtimerSet(view)
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.runninglayout), R.layout.buttonsfake, this);
         }
         else if(id == R.id.runningbuttonplay) {
             if(findViewById<ImageView>(R.id.runningPlay).visibility == View.VISIBLE) {
@@ -391,6 +392,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             setContentView(R.layout.timer)
             timeSet()
             timeSet()
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.timerlayout), R.layout.buttonsfake, this);
         }
         else if(id == R.id.Timerbuttonplay) {
             if(findViewById<ImageView>(R.id.TimerPlay).visibility == View.VISIBLE) {
@@ -435,6 +437,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             }
             findViewById<Button>(R.id.settingsbutton1).background = gradientDrawable
             findViewById<Button>(R.id.settingsbutton2).background = gradientDrawable
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.settingslayout), R.layout.buttonsfake, this);
         }
         //if lost
         else {
