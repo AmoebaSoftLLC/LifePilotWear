@@ -11,6 +11,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
@@ -19,6 +21,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
@@ -33,7 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListener {
+class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListener, GestureDetector.OnGestureListener {
 
     //Google Sign in variables
     var gso: GoogleSignInOptions? = null
@@ -397,5 +400,29 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
             backvariable = true
             sensorMethod()
         }
+    }
+
+    override fun onDown(p0: MotionEvent): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onShowPress(p0: MotionEvent) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onSingleTapUp(p0: MotionEvent): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onScroll(p0: MotionEvent?, p1: MotionEvent, p2: Float, p3: Float): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onLongPress(p0: MotionEvent) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onFling(p0: MotionEvent?, p1: MotionEvent, p2: Float, p3: Float): Boolean {
+        TODO("Not yet implemented")
     }
 }
