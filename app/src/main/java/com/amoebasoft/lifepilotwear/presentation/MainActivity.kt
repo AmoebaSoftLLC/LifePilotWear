@@ -11,8 +11,13 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.transition.Scene
+import android.transition.Slide
+import android.transition.Transition
+import android.transition.TransitionManager
 import android.util.Log
 import android.view.GestureDetector
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
@@ -101,7 +106,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         if (event != null) {
             if (event.sensor.type == Sensor.TYPE_HEART_RATE) {
                 ViewPagerAdapter.heartRateSensorValue = event.values[0]
-                sensorMethod()
+                //sensorMethod()
             }
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                 val currentTimeNs = System.nanoTime()
@@ -126,7 +131,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         stepCount++
                         lastStepTimeNs = currentTimeNs
                         ViewPagerAdapter.accelSensorValue = stepCount
-                        sensorMethod()
+                        //sensorMethod()
                     }
                 }
             }
@@ -236,7 +241,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             if(backvariable) {
                 backvariable = false
                 //not working still
+                //ViewPagerAdapter.screencheck = 2
                 //viewPager.currentItem = 2
+                viewPager.setCurrentItem(2, false)
             }
             timeSet()
     }
@@ -305,6 +312,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         }
         runninghandler.post(runningrunnable)
     }
+    private var homeAnimation: Scene? = null
     //OnClicks for buttons
     override fun onClick(view: View?) {
         val id = view?.id
@@ -417,6 +425,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else if(id == R.id.buttonUser) {
             setContentView(R.layout.user)
             timeSet()
+            //homeAnimation = Scene.getSceneForLayout(findViewById(R.id.userlayout), R.layout.quickdata, this);
         }
         //settings button
         else if(id == R.id.buttonSettings) {
@@ -470,9 +479,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     {
                         //Toast.makeText(this,"Right swipe", Toast.LENGTH_SHORT).show()
                         //in case timers running
+                        backvariable = true
                         isRunning = false
                         runningisRunning = false
                         //go to home after delay
+                        //transition slide
+                        /*val slide: Transition = Slide(Gravity.RIGHT)
+                        TransitionManager.go(homeAnimation, slide)*/
                         sensorHandler.postDelayed({
                             sensorMethod()
                         }, 50)
