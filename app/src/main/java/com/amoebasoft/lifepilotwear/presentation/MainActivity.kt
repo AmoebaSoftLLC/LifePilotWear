@@ -490,7 +490,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         timeSet()
                         sensorHandler.postDelayed({
                             sensorMethod()
-                        }, 800)
+                        }, 700)
                     }
                     else
                     {
