@@ -79,9 +79,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     //back button
     private var backvariable = false
     //gesture data
+    private var homeAnimation: Scene? = null
     lateinit var gestureDetector: GestureDetector
     private val sensorHandler = Handler(Looper.getMainLooper())
-    private val backHandler = Handler(Looper.getMainLooper())
     var x2:Float = 0.0f
     var x1:Float = 0.0f
     var y2:Float = 0.0f
@@ -313,7 +313,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         }
         runninghandler.post(runningrunnable)
     }
-    private var homeAnimation: Scene? = null
     //OnClicks for buttons
     override fun onClick(view: View?) {
         val id = view?.id
