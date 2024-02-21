@@ -18,6 +18,7 @@
             android:gravity="center"
             android:onClick="onClick"
             android:text="Sync"
+            android:textColor="@color/white"
             android:textSize="40sp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"

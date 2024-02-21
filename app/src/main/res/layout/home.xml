@@ -24,6 +24,7 @@
         android:clickable="true"
         android:onClick="onClick"
         android:text="Allow Permissions"
+        android:textColor="@color/white"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
