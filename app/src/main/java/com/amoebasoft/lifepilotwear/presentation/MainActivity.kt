@@ -416,24 +416,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
-
         when (event?.action){
-
-
             0->
             {
                 x1 = event.x
                 y1 = event.y
             }
-
             1->
             {
                 x2 = event.x
                 y2 = event.y
-
                 val valueX:Float = x2-x1
                 val valueY:Float = y2-y1
-
                 if(abs(valueX) > MIN_DISTANCE)
                 {
                     if (x2 > x1)
@@ -456,34 +450,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         Toast.makeText(this,"Top swipe", Toast.LENGTH_SHORT).show()
                     }
                 }
-
             }
         }
-
         return super.onTouchEvent(event)
     }
-
-    override fun onDown(e: MotionEvent?): Boolean {
+    override fun onDown(e: MotionEvent): Boolean {
         return false
     }
-
-    override fun onShowPress(e: MotionEvent?) {
-        //TODO("Not yet implemented")
+    override fun onShowPress(e: MotionEvent) {
     }
-
-    override fun onSingleTapUp(e: MotionEvent?): Boolean {
+    override fun onSingleTapUp(e: MotionEvent): Boolean {
         return false
     }
-
-    override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
         return false
     }
-
-    override fun onLongPress(e: MotionEvent?) {
-        //TODO("Not yet implemented")
+    override fun onLongPress(e: MotionEvent) {
     }
-
-    override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
+    override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
         return false
     }
 }

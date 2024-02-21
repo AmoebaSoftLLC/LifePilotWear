@@ -44,7 +44,8 @@
             android:value="true" />
         <activity
             android:name=".presentation.MainActivity"
-            android:exported="false">
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.DayNight">
         </activity>
         <activity
             android:name=".presentation.Splash"

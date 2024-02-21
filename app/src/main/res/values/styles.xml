@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Define your custom styles here -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
+        <!-- Customize theme attributes here -->
+    </style>
+
+    <!-- Define other custom styles as needed -->
+</resources>
