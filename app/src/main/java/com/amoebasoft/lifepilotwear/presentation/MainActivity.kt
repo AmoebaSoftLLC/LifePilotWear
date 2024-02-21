@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     private var backvariable = false
     //gesture data
     lateinit var gestureDetector: GestureDetector
+    private val sensorHandler = Handler(Looper.getMainLooper())
     var x2:Float = 0.0f
     var x1:Float = 0.0f
     var y2:Float = 0.0f
@@ -405,17 +406,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             setContentView(R.layout.settings)
             timeSet()
         }
-        //back button, temp for now
-        else if(id == R.id.tempback1) {
-            backvariable = true
+        //if lost
+        else {
             sensorMethod()
         }
     }
+
+    //on touch events for gesturing
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
         return super.dispatchTouchEvent(event)
     }
-
     override fun onTouchEvent(event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
         when (event.action){
@@ -435,7 +436,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     if (x2 > x1)
                     {
                         //Toast.makeText(this,"Right swipe", Toast.LENGTH_SHORT).show()
-                        sensorMethod()
+                        //in case timers running
+                        isRunning = false
+                        runningisRunning = false
+                        //go to home after delay
+                        sensorHandler.postDelayed({
+                            sensorMethod()
+                        }, 50)
                     }
                     else
                     {
