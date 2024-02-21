@@ -434,23 +434,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 {
                     if (x2 > x1)
                     {
-                        Toast.makeText(this,"Right swipe", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this,"Right swipe", Toast.LENGTH_SHORT).show()
                         sensorMethod()
                     }
                     else
                     {
-                        Toast.makeText(this,"Left swipe", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this,"Left swipe", Toast.LENGTH_SHORT).show()
                     }
                 }
                 else if (abs(valueY) > MIN_DISTANCE)
                 {
                     if(y2 > y1)
                     {
-                        Toast.makeText(this, "Bottom Swipe", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this, "Bottom Swipe", Toast.LENGTH_SHORT).show()
                     }
                     else
                     {
-                        Toast.makeText(this,"Top swipe", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this,"Top swipe", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
