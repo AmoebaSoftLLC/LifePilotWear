@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     var y2:Float = 0.0f
     var y1:Float = 0.0f
     companion object {
-        const val MIN_DISTANCE = 150
+        const val MIN_DISTANCE = 50
     }
     //sensor permission data
     private val requestPermissionLauncher = registerForActivityResult(
@@ -190,8 +190,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     }
     //Update Sensor UI with PageViewer from Sensor Updates
     private fun sensorMethod() {
-
             setContentView(R.layout.home)
+            //gestureDetector = GestureDetector(this, this)
             //permission recheck on load
             if (ContextCompat.checkSelfPermission(this, PERMISSION_BODY_SENSORS)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -240,7 +240,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 //viewPager.currentItem = 2
             }
             timeSet()
-
     }
     // Set home time
     fun timeSet() {
@@ -401,6 +400,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else if(id == R.id.buttonUser) {
             setContentView(R.layout.user)
             timeSet()
+            gestureDetector = GestureDetector(this, this)
         }
         //settings button
         else if(id == R.id.buttonSettings) {
@@ -433,6 +433,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     if (x2 > x1)
                     {
                         Toast.makeText(this,"Right swipe", Toast.LENGTH_SHORT).show()
+                        sensorMethod()
                     }
                     else
                     {

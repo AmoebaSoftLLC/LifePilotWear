@@ -8,6 +8,7 @@
         <item name="android:textColor">@color/gray</item>
         <item name="android:buttonStyle">@style/ButtonColor</item>
         <item name="colorButtonNormal">@color/purple</item>
+        <item name="android:windowSwipeToDismiss">false</item>
     </style>
 
     <style name="ButtonColor" parent="@android:style/Widget.Button">
