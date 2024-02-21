@@ -411,6 +411,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else if(id == R.id.buttonSettings) {
             setContentView(R.layout.settings)
             timeSet()
+            val gradientDrawable = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 60f
+            }
+            findViewById<Button>(R.id.settingsbutton1).background = gradientDrawable
+            findViewById<Button>(R.id.settingsbutton2).background = gradientDrawable
         }
         //if lost
         else {
