@@ -24,6 +24,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -86,6 +87,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     var x1:Float = 0.0f
     var y2:Float = 0.0f
     var y1:Float = 0.0f
+    //setting variables
+    private var notif: Boolean = true
     companion object {
         const val MIN_DISTANCE = 50
     }
@@ -167,6 +170,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         setContent {
             setContentView(R.layout.home)
             sensorMethod()
+            //settings saved inputs
+            //notif
+            //bluetooth
             //Google Sign In variables using dummy parameters for now
             gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.server_client_id)).requestEmail().build()
@@ -440,6 +446,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             findViewById<Button>(R.id.settingsbutton1).background = gradientDrawable
             findViewById<Button>(R.id.settingsbutton2).background = gradientDrawable
             homeAnimation = Scene.getSceneForLayout(findViewById(R.id.settingslayout), R.layout.buttonsfake, this);
+            //settings saved
+            findViewById<Switch>(R.id.notifswitch1).isChecked = notif
+        }
+        else if(id == R.id.syncbuttonsettings) {
+            //sync to bluetooth phone
+        }
+        else if(id == R.id.notifswitch1) {
+            if (findViewById<Switch>(R.id.notifswitch1).isChecked == true) { notif = true }
+            else { notif = false }
         }
         //if lost
         else {
