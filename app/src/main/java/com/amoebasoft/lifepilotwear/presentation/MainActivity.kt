@@ -140,9 +140,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     }
                 }
             }
-            if(isSensorScreen) {
-                sensorMethod()
-            }
         }
     }
     fun requestPermission() {
@@ -197,13 +194,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     //Sensor start and Stops
     override fun onResume() {
         super.onResume()
-        mSensorManager.registerListener(this, mHeartRateSensor, 2000000)
-        mSensorManager.registerListener(this, mStepDetectSensor, 2000000)
+        mSensorManager.registerListener(this, mHeartRateSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        mSensorManager.registerListener(this, mStepDetectSensor, SensorManager.SENSOR_DELAY_NORMAL)
     }
     override fun onPause() {
         super.onPause()
         mSensorManager.unregisterListener(this)
     }
+    private val uiUpdateHandler = Handler(Looper.getMainLooper())
+    private lateinit var uiUpdateRunnable: Runnable
     //Update Sensor UI with PageViewer from Sensor Updates
     private fun sensorMethod() {
             setContentView(R.layout.home)
@@ -230,10 +229,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         findViewById<ImageView>(R.id.maindot2).visibility = View.GONE
                         findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
                         isSensorScreen = true
+                        uiUpdateRunnable = Runnable {
+                            adapter.notifyDataSetChanged()
+                            viewPager.adapter = adapter
+                            uiUpdateHandler.postDelayed(uiUpdateRunnable, 2000L)
+                        }
+                        // Start the UI update loop
+                        uiUpdateHandler.postDelayed(uiUpdateRunnable, 2000L)
                     } else if (position == 1) {
                         findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
                         findViewById<ImageView>(R.id.maindot2).visibility = View.VISIBLE
                         findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
+                        if(isSensorScreen) {
+                            uiUpdateHandler.removeCallbacksAndMessages(null)}
                         isSensorScreen = false
                     } else if (position == 2) {
                         findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
