@@ -1,6 +1,7 @@
 package com.amoebasoft.lifepilotwear.presentation
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
@@ -179,6 +180,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     private val uiUpdateHandler = Handler(Looper.getMainLooper())
     private lateinit var uiUpdateRunnable: Runnable
     //Update Sensor UI with PageViewer from Sensor Updates
+    @SuppressLint("NotifyDataSetChanged")
     private fun sensorMethod() {
             setContentView(R.layout.home)
             //permission recheck on load
@@ -196,33 +198,38 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             )
             val adapter = ViewPagerAdapter(images)
             viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                @SuppressLint("NotifyDataSetChanged")
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     //navigation update
-                    if(position == 0) {
-                        findViewById<ImageView>(R.id.maindot1).visibility = View.VISIBLE
-                        findViewById<ImageView>(R.id.maindot2).visibility = View.GONE
-                        findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
-                        isSensorScreen = true
-                        uiUpdateRunnable = Runnable {
-                            adapter.notifyDataSetChanged()
-                            viewPager.adapter = adapter
+                    when (position) {
+                        0 -> {
+                            findViewById<ImageView>(R.id.maindot1).visibility = View.VISIBLE
+                            findViewById<ImageView>(R.id.maindot2).visibility = View.GONE
+                            findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
+                            isSensorScreen = true
+                            uiUpdateRunnable = Runnable {
+                                adapter.notifyDataSetChanged()
+                                viewPager.adapter = adapter
+                                uiUpdateHandler.postDelayed(uiUpdateRunnable, 2000L)
+                            }
+                            // Start the UI update loop
                             uiUpdateHandler.postDelayed(uiUpdateRunnable, 2000L)
                         }
-                        // Start the UI update loop
-                        uiUpdateHandler.postDelayed(uiUpdateRunnable, 2000L)
-                    } else if (position == 1) {
-                        findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
-                        findViewById<ImageView>(R.id.maindot2).visibility = View.VISIBLE
-                        findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
-                        if(isSensorScreen) {
-                            uiUpdateHandler.removeCallbacksAndMessages(null)}
-                        isSensorScreen = false
-                    } else if (position == 2) {
-                        findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
-                        findViewById<ImageView>(R.id.maindot2).visibility = View.GONE
-                        findViewById<ImageView>(R.id.maindot3).visibility = View.VISIBLE
-                        isSensorScreen = false
+                        1 -> {
+                            findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
+                            findViewById<ImageView>(R.id.maindot2).visibility = View.VISIBLE
+                            findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
+                            if(isSensorScreen) {
+                                uiUpdateHandler.removeCallbacksAndMessages(null)}
+                            isSensorScreen = false
+                        }
+                        2 -> {
+                            findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
+                            findViewById<ImageView>(R.id.maindot2).visibility = View.GONE
+                            findViewById<ImageView>(R.id.maindot3).visibility = View.VISIBLE
+                            isSensorScreen = false
+                        }
                     }
                 }
             })
@@ -246,13 +253,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         timeEdit.setText(curTime)
     }
     //timer settings
-    fun timerSet(view: View) {
+    fun timerSet() {
         handler = Handler(Looper.getMainLooper())
-        if (!isRunning) {
-            startTime = System.currentTimeMillis()
+        startTime = if (!isRunning) {
+            System.currentTimeMillis()
         } else {
             // When the timer is resumed, update the start time to maintain continuity
-            startTime = System.currentTimeMillis() - elapsedTime
+            System.currentTimeMillis() - elapsedTime
         }
         runnable = object : Runnable {
             override fun run() {
@@ -273,13 +280,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         }
         handler.post(runnable)
     }
-    fun runningtimerSet(view: View) {
+    fun runningtimerSet() {
         runninghandler = Handler(Looper.getMainLooper())
-        if (!runningisRunning) {
-            runningstartTime = System.currentTimeMillis()
+        runningstartTime = if (!runningisRunning) {
+            System.currentTimeMillis()
         } else {
             // When the timer is resumed, update the start time to maintain continuity
-            runningstartTime = System.currentTimeMillis() - runningelapsedTime
+            System.currentTimeMillis() - runningelapsedTime
         }
         runningrunnable = object : Runnable {
             override fun run() {
@@ -292,7 +299,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 val time = String.format("%02d:%02d:%02d", hours, minutes, seconds)
                 //using estimated steps than actual for now
                 //val km = String.format("%.2f km", stepCount * 0.000762)
-                val km = String.format("%.2f km", (runningelapsedTime * .000002).toDouble())
+                val km = String.format("%.2f km", (runningelapsedTime * .000002))
                 //update timer UI
                 findViewById<TextView>(R.id.runningText).text = time
                 findViewById<TextView>(R.id.runningkm).text = km
@@ -304,6 +311,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         runninghandler.post(runningrunnable)
     }
     //OnClicks for buttons
+    @SuppressLint("SetTextI18n")
     override fun onClick(view: View?) {
         val id = view?.id
         //sync buttons
@@ -349,8 +357,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else if(id == R.id.buttonRunning) {
             setContentView(R.layout.running)
             timeSet()
-            runningtimerSet(view)
-            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.runninglayout), R.layout.buttonsfake, this);
+            runningtimerSet()
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.runninglayout), R.layout.buttonsfake, this)
         }
         else if(id == R.id.runningbuttonplay) {
             if(findViewById<ImageView>(R.id.runningPlay).visibility == View.VISIBLE) {
@@ -358,7 +366,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 findViewById<ImageView>(R.id.runningPause).visibility = View.VISIBLE
                 //start time
                 runningisRunning = true
-                runningtimerSet(view)
+                runningtimerSet()
             } else {
                 findViewById<ImageView>(R.id.runningPlay).visibility = View.VISIBLE
                 findViewById<ImageView>(R.id.runningPause).visibility = View.GONE
@@ -371,7 +379,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             findViewById<ImageView>(R.id.runningPause).visibility = View.GONE
             //pause and reset time
             runningisRunning = false
-            runningtimerSet(view)
+            runningtimerSet()
             runninghandler.postDelayed({
                 //reset the timer after delay to finish tasks
                 findViewById<TextView>(R.id.runningText).text = "00:00:00"
@@ -384,7 +392,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             setContentView(R.layout.timer)
             timeSet()
             timeSet()
-            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.timerlayout), R.layout.buttonsfake, this);
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.timerlayout), R.layout.buttonsfake, this)
         }
         else if(id == R.id.Timerbuttonplay) {
             if(findViewById<ImageView>(R.id.TimerPlay).visibility == View.VISIBLE) {
@@ -392,7 +400,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 findViewById<ImageView>(R.id.TimerPause).visibility = View.VISIBLE
                 //start time
                 isRunning = true
-                timerSet(view)
+                timerSet()
             } else {
                 findViewById<ImageView>(R.id.TimerPlay).visibility = View.VISIBLE
                 findViewById<ImageView>(R.id.TimerPause).visibility = View.GONE
@@ -405,7 +413,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             findViewById<ImageView>(R.id.TimerPause).visibility = View.GONE
             //pause and reset time
             isRunning = false
-            timerSet(view)
+            timerSet()
             handler.postDelayed({
                 //reset the timer after delay to finish tasks
                 findViewById<TextView>(R.id.timerText).text = "00:00:00:000"
@@ -417,7 +425,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else if(id == R.id.buttonUser) {
             setContentView(R.layout.user)
             timeSet()
-            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.userlayout), R.layout.buttonsfake, this);
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.userlayout), R.layout.buttonsfake, this)
         }
         //settings button
         else if(id == R.id.buttonSettings) {
@@ -429,7 +437,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             }
             findViewById<Button>(R.id.settingsbutton1).background = gradientDrawable
             findViewById<Button>(R.id.settingsbutton2).background = gradientDrawable
-            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.settingslayout), R.layout.buttonsfake, this);
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.settingslayout), R.layout.buttonsfake, this)
             //settings saved
             findViewById<Switch>(R.id.notifswitch1).isChecked = notif
         }
@@ -437,8 +445,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             //sync to bluetooth phone
         }
         else if(id == R.id.notifswitch1) {
-            if (findViewById<Switch>(R.id.notifswitch1).isChecked == true) { notif = true }
-            else { notif = false }
+            notif = findViewById<Switch>(R.id.notifswitch1).isChecked == true
         }
         //if lost
         else {
@@ -474,7 +481,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 x2 = event.x
                 y2 = event.y
                 val valueX:Float = x2-x1
-                val valueY:Float = y2-y1
+                //val valueY:Float = y2-y1
                 if(abs(valueX) > MIN_DISTANCE)
                 {
                     if (x2 > x1)
@@ -487,28 +494,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         //go to home after delay with transition slide
                         sensorHandler.postDelayed({
                             window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
-                            val slide: Transition = Slide(Gravity.RIGHT)
+                            val slide: Transition = Slide(Gravity.END)
                             TransitionManager.go(homeAnimation, slide)
                             timeSet()
                         }, 50)
                         sensorHandler.postDelayed({
                             sensorMethod()
                         }, 700)
-                    }
-                    else
-                    {
-                        //Toast.makeText(this,"Left swipe", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                else if (abs(valueY) > MIN_DISTANCE)
-                {
-                    if(y2 > y1)
-                    {
-                        //Toast.makeText(this, "Bottom Swipe", Toast.LENGTH_SHORT).show()
-                    }
-                    else
-                    {
-                        //Toast.makeText(this,"Top swipe", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
