@@ -92,19 +92,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     private var notif: Boolean = true
     companion object {
         const val MIN_DISTANCE = 50
-        private const val PERMISSION_REQUEST_CODE = 100
+        private const val PERMISSION_REQUEST_BODY_SENSORS = 100
     }
     //sensor permission data
-    private var requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                // Permission granted
-                findViewById<Button>(R.id.buttonRuntimePermission).visibility = View.GONE
-            } else {
-                // Permission denied
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
-            }
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            Log.i("Permission: ", "Granted")
+            findViewById<Button>(R.id.buttonRuntimePermission).visibility = View.GONE
+        } else {
+            Log.i("Permission: ", "Denied")
         }
+    }
     override fun onAccuracyChanged(sensor: Sensor?, bpm: Int) {
         return
     }
@@ -147,39 +147,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     fun requestPermission() {
         if (ContextCompat.checkSelfPermission(this, PERMISSION_BODY_SENSORS)
             == PackageManager.PERMISSION_GRANTED) {
-            // Permission already granted
+            // Permission granted
             findViewById<Button>(R.id.buttonRuntimePermission).visibility = View.GONE
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION_BODY_SENSORS)) {
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage("This app requires BODY_SENSORS permission for particular features to work as expected.")
+                .setTitle("Permission Required")
+                .setCancelable(false)
+                .setPositiveButton("Ok") { dialog, which ->
+                    ActivityCompat.requestPermissions(this, arrayOf(PERMISSION_BODY_SENSORS), PERMISSION_REQUEST_BODY_SENSORS)
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancel") { dialog, which ->
+                    dialog.dismiss()
+                }
+            builder.show()
         } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION_BODY_SENSORS)) {
-                // Show rationale if necessary
-                val builder = AlertDialog.Builder(this)
-                builder.setMessage("This app requires BODY_SENSORS permission for particular features to work as expected.")
-                    .setTitle("Permission Required")
-                    .setCancelable(false)
-                    .setPositiveButton("Ok") { dialog, which ->
-                        ActivityCompat.requestPermissions(this, arrayOf(PERMISSION_BODY_SENSORS), PERMISSION_REQUEST_CODE)
-                        dialog.dismiss()
-                    }
-                    .setNegativeButton("Cancel") { dialog, which ->
-                        dialog.dismiss()
-                    }
-                builder.show()
-            } else {
-                // Request permission using Activity Result API
-                requestPermissionLauncher.launch(PERMISSION_BODY_SENSORS)
-            }
-        }
-    }
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
-                findViewById<Button>(R.id.buttonRuntimePermission).visibility = View.GONE
-            } else {
-                // Permission denied
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
-            }
+            requestPermissionLauncher.launch(PERMISSION_BODY_SENSORS)
         }
     }
     //OnStartup for App
@@ -187,9 +171,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         super.onCreate(savedInstanceState)
         setContent {
             setContentView(R.layout.home)
+            //requestPermission()
             sensorMethod()
-
-
             //settings saved inputs
             //notif
             //bluetooth
