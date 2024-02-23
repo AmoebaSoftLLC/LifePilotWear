@@ -63,6 +63,7 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2022.10.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("androidx.wear.compose:compose-material:1.0.0")
     implementation("androidx.wear.compose:compose-foundation:1.0.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
