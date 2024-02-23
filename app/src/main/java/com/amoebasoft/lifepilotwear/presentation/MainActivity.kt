@@ -3,7 +3,6 @@ package com.amoebasoft.lifepilotwear.presentation
 import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -26,7 +25,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -34,26 +32,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.amoebasoft.lifepilotwear.R
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListener, GestureDetector.OnGestureListener {
 
-    //Google Sign in variables
-    /*var gso: GoogleSignInOptions? = null
-    var gsc: GoogleSignInClient? = null
-    var account: GoogleSignInAccount? = null
-    private var mAuth: FirebaseAuth? = null
-    var user: FirebaseUser? = null
-    var db: FirebaseFirestore = FirebaseFirestore.getInstance()*/
     //Initialize Sensor Data
     private val ALPHA = 0.8f
     private val STEP_THRESHOLD = 8
@@ -170,16 +154,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         setContent {
             setContentView(R.layout.home)
             sensorMethod()
+
             //settings saved inputs
             //notif
             //bluetooth
-            //Google Sign In variables using dummy parameters for now
-            /*gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.server_client_id)).requestEmail().build()
-            gsc = GoogleSignIn.getClient(this, gso!!)
-            mAuth = FirebaseAuth.getInstance()
-            user = mAuth!!.getCurrentUser() //is null if user is not signed in
-            account = GoogleSignIn.getLastSignedInAccount(this) //is null if user is not signed in*/
         }
         //gesture
         gestureDetector = GestureDetector(this, this)
@@ -187,9 +165,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         mHeartRateSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
         mStepDetectSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        //calorie tracker inputs / data pulls from firebase / using dummy data for now
-        //menBMR = 66.47 + (6.24 x 160) + (12.7 x 70) - (6.755 x 28) = 1764.13
-        //womenBMR = 655.1 + (4.35 x weight) + (4.7 x height) - (4.7 x age)
     }
     //Sensor start and Stops
     override fun onResume() {
