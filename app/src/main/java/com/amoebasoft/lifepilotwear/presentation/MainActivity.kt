@@ -227,8 +227,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         findViewById<ImageView>(R.id.maindot2).visibility = View.GONE
                         findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
                         isSensorScreen = true
-                        adapter.notifyDataSetChanged()
-                        viewPager.adapter = adapter
                     } else if (position == 1) {
                         findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
                         findViewById<ImageView>(R.id.maindot2).visibility = View.VISIBLE
