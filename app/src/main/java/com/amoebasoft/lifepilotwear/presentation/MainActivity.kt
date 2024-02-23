@@ -26,6 +26,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -47,12 +48,12 @@ import kotlin.math.abs
 class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListener, GestureDetector.OnGestureListener {
 
     //Google Sign in variables
-    var gso: GoogleSignInOptions? = null
+    /*var gso: GoogleSignInOptions? = null
     var gsc: GoogleSignInClient? = null
     var account: GoogleSignInAccount? = null
     private var mAuth: FirebaseAuth? = null
     var user: FirebaseUser? = null
-    var db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    var db: FirebaseFirestore = FirebaseFirestore.getInstance()*/
     //Initialize Sensor Data
     private val ALPHA = 0.8f
     private val STEP_THRESHOLD = 8
@@ -91,18 +92,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     private var notif: Boolean = true
     companion object {
         const val MIN_DISTANCE = 50
+        private const val PERMISSION_REQUEST_CODE = 100
     }
     //sensor permission data
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            Log.i("Permission: ", "Granted")
-            findViewById<Button>(R.id.buttonRuntimePermission).visibility = View.GONE
-        } else {
-            Log.i("Permission: ", "Denied")
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // Permission granted
+                findViewById<Button>(R.id.buttonRuntimePermission).visibility = View.GONE
+            } else {
+                // Permission denied
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+            }
         }
-    }
     override fun onAccuracyChanged(sensor: Sensor?, bpm: Int) {
         return
     }
@@ -145,23 +147,39 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     fun requestPermission() {
         if (ContextCompat.checkSelfPermission(this, PERMISSION_BODY_SENSORS)
             == PackageManager.PERMISSION_GRANTED) {
-            // Permission granted
+            // Permission already granted
             findViewById<Button>(R.id.buttonRuntimePermission).visibility = View.GONE
-        } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION_BODY_SENSORS)) {
-            val builder = AlertDialog.Builder(this)
-            builder.setMessage("This app requires BODY_SENSORS permission for particular features to work as expected.")
-                .setTitle("Permission Required")
-                .setCancelable(false)
-                .setPositiveButton("Ok") { dialog, which ->
-                    ActivityCompat.requestPermissions(this, arrayOf(PERMISSION_BODY_SENSORS), 100)
-                    dialog.dismiss()
-                }
-                .setNegativeButton("Cancel") { dialog, which ->
-                    dialog.dismiss()
-                }
-            builder.show()
         } else {
-            requestPermissionLauncher.launch(PERMISSION_BODY_SENSORS)
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION_BODY_SENSORS)) {
+                // Show rationale if necessary
+                val builder = AlertDialog.Builder(this)
+                builder.setMessage("This app requires BODY_SENSORS permission for particular features to work as expected.")
+                    .setTitle("Permission Required")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok") { dialog, which ->
+                        ActivityCompat.requestPermissions(this, arrayOf(PERMISSION_BODY_SENSORS), PERMISSION_REQUEST_CODE)
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Cancel") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                builder.show()
+            } else {
+                // Request permission using Activity Result API
+                requestPermissionLauncher.launch(PERMISSION_BODY_SENSORS)
+            }
+        }
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                findViewById<Button>(R.id.buttonRuntimePermission).visibility = View.GONE
+            } else {
+                // Permission denied
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+            }
         }
     }
     //OnStartup for App
@@ -174,12 +192,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             //notif
             //bluetooth
             //Google Sign In variables using dummy parameters for now
-            gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            /*gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.server_client_id)).requestEmail().build()
             gsc = GoogleSignIn.getClient(this, gso!!)
             mAuth = FirebaseAuth.getInstance()
             user = mAuth!!.getCurrentUser() //is null if user is not signed in
-            account = GoogleSignIn.getLastSignedInAccount(this) //is null if user is not signed in
+            account = GoogleSignIn.getLastSignedInAccount(this) //is null if user is not signed in*/
         }
         //gesture
         gestureDetector = GestureDetector(this, this)
