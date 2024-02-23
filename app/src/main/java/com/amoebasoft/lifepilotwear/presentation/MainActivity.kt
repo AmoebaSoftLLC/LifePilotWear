@@ -140,6 +140,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     }
                 }
             }
+            if(isSensorScreen) {
+                sensorMethod()
+            }
         }
     }
     fun requestPermission() {
@@ -194,8 +197,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     //Sensor start and Stops
     override fun onResume() {
         super.onResume()
-        mSensorManager.registerListener(this, mHeartRateSensor, SensorManager.SENSOR_DELAY_NORMAL)
-        mSensorManager.registerListener(this, mStepDetectSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        mSensorManager.registerListener(this, mHeartRateSensor, 2000000)
+        mSensorManager.registerListener(this, mStepDetectSensor, 2000000)
     }
     override fun onPause() {
         super.onPause()
