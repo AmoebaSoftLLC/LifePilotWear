@@ -113,7 +113,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         if (event != null) {
             if (event.sensor.type == Sensor.TYPE_HEART_RATE) {
                 ViewPagerAdapter.heartRateSensorValue = event.values[0]
-                //sensorMethod()
             }
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                 val currentTimeNs = System.nanoTime()
@@ -138,7 +137,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         stepCount++
                         lastStepTimeNs = currentTimeNs
                         ViewPagerAdapter.accelSensorValue = stepCount
-                        //sensorMethod()
                     }
                 }
             }
@@ -171,7 +169,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         super.onCreate(savedInstanceState)
         setContent {
             setContentView(R.layout.home)
-            //requestPermission()
             sensorMethod()
             //settings saved inputs
             //notif
