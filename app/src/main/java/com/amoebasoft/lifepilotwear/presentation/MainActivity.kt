@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         private const val PERMISSION_REQUEST_CODE = 100
     }
     //sensor permission data
-    private val requestPermissionLauncher =
+    private var requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
                 // Permission granted
@@ -188,6 +188,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         setContent {
             setContentView(R.layout.home)
             sensorMethod()
+
+
             //settings saved inputs
             //notif
             //bluetooth
