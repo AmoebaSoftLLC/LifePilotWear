@@ -149,6 +149,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             requestPermissionLauncher.launch(PERMISSION_BODY_SENSORS)
         }
     }
+
     //OnStartup for App
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
