@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/settingslayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clickable="true">
+    android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/settingslayout2"
@@ -16,21 +15,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/tempback1"
-            android:layout_width="38dp"
-            android:layout_height="27dp"
-            android:clickable="true"
-            android:onClick="onClick"
-            android:text="temp"
-            android:textSize="5sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.227"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.018" />
 
         <TextView
             android:id="@+id/time"
@@ -88,12 +72,17 @@
 
                                 <Button
                                     android:id="@+id/settingsbutton1"
+                                    android:backgroundTint="@color/darkgray"
+                                    android:textColor="@color/white"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:elevation="-2dp"
                                     android:gravity="center_horizontal|top"
                                     android:text="Sync"
                                     android:textSize="27dp"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginBottom="5dp"
+                                    android:stateListAnimator="@null"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
@@ -112,6 +101,7 @@
                                     android:onClick="onClick"
                                     android:scaleX=".5"
                                     android:scaleY=".7"
+                                    android:stateListAnimator="@null"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="@+id/settings1"
                                     app:layout_constraintStart_toStartOf="@+id/settings1"
@@ -127,9 +117,14 @@
                                     android:id="@+id/settingsbutton2"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginBottom="5dp"
+                                    android:backgroundTint="@color/darkgray"
                                     android:elevation="-2dp"
                                     android:gravity="center_horizontal|top"
+                                    android:stateListAnimator="@null"
                                     android:text="Notifications"
+                                    android:textColor="@color/white"
                                     android:textSize="18dp"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
@@ -142,10 +137,11 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="15dp"
                                     android:elevation="2dp"
+                                    android:onClick="onClick"
                                     android:scaleX="1.5"
                                     android:scaleY="1.5"
-                                    android:trackTint="@color/switch_track_selector"
                                     android:thumbTint="@color/switch_thumb_selector"
+                                    android:trackTint="@color/switch_track_selector"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="@+id/settings2"
                                     app:layout_constraintStart_toStartOf="@+id/settings2"

@@ -1,8 +1,10 @@
 package com.amoebasoft.lifepilotwear.presentation
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.graphics.drawable.GradientDrawable
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -10,38 +12,33 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.transition.Scene
+import android.transition.Slide
+import android.transition.Transition
+import android.transition.TransitionManager
 import android.util.Log
+import android.view.GestureDetector
+import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.amoebasoft.lifepilotwear.R
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.abs
 
-class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListener {
+class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListener, GestureDetector.OnGestureListener {
 
-    //Google Sign in variables
-    var gso: GoogleSignInOptions? = null
-    var gsc: GoogleSignInClient? = null
-    var account: GoogleSignInAccount? = null
-    private var mAuth: FirebaseAuth? = null
-    var user: FirebaseUser? = null
-    var db: FirebaseFirestore = FirebaseFirestore.getInstance()
     //Initialize Sensor Data
     private val ALPHA = 0.8f
     private val STEP_THRESHOLD = 8
@@ -68,6 +65,20 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
     private var runningisRunning = false
     //back button
     private var backvariable = false
+    //gesture data
+    private var homeAnimation: Scene? = null
+    lateinit var gestureDetector: GestureDetector
+    private val sensorHandler = Handler(Looper.getMainLooper())
+    var x2:Float = 0.0f
+    var x1:Float = 0.0f
+    var y2:Float = 0.0f
+    var y1:Float = 0.0f
+    //setting variables
+    private var notif: Boolean = true
+    companion object {
+        const val MIN_DISTANCE = 50
+        private const val PERMISSION_REQUEST_BODY_SENSORS = 100
+    }
     //sensor permission data
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -87,7 +98,6 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
         if (event != null) {
             if (event.sensor.type == Sensor.TYPE_HEART_RATE) {
                 ViewPagerAdapter.heartRateSensorValue = event.values[0]
-                sensorMethod()
             }
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                 val currentTimeNs = System.nanoTime()
@@ -112,7 +122,6 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
                         stepCount++
                         lastStepTimeNs = currentTimeNs
                         ViewPagerAdapter.accelSensorValue = stepCount
-                        sensorMethod()
                     }
                 }
             }
@@ -129,7 +138,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
                 .setTitle("Permission Required")
                 .setCancelable(false)
                 .setPositiveButton("Ok") { dialog, which ->
-                    ActivityCompat.requestPermissions(this, arrayOf(PERMISSION_BODY_SENSORS), 100)
+                    ActivityCompat.requestPermissions(this, arrayOf(PERMISSION_BODY_SENSORS), PERMISSION_REQUEST_BODY_SENSORS)
                     dialog.dismiss()
                 }
                 .setNegativeButton("Cancel") { dialog, which ->
@@ -146,21 +155,17 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
         setContent {
             setContentView(R.layout.home)
             sensorMethod()
-            //Google Sign In variables using dummy parameters for now
-            gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.server_client_id)).requestEmail().build()
-            gsc = GoogleSignIn.getClient(this, gso!!)
-            mAuth = FirebaseAuth.getInstance()
-            user = mAuth!!.getCurrentUser() //is null if user is not signed in
-            account = GoogleSignIn.getLastSignedInAccount(this) //is null if user is not signed in
+
+            //settings saved inputs
+            //notif
+            //bluetooth
         }
+        //gesture
+        gestureDetector = GestureDetector(this, this)
         //Sensor Requirements
         mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         mHeartRateSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
         mStepDetectSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        //calorie tracker inputs / data pulls from firebase / using dummy data for now
-        //menBMR = 66.47 + (6.24 x 160) + (12.7 x 70) - (6.755 x 28) = 1764.13
-        //womenBMR = 655.1 + (4.35 x weight) + (4.7 x height) - (4.7 x age)
     }
     //Sensor start and Stops
     override fun onResume() {
@@ -172,9 +177,11 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
         super.onPause()
         mSensorManager.unregisterListener(this)
     }
+    private val uiUpdateHandler = Handler(Looper.getMainLooper())
+    private lateinit var uiUpdateRunnable: Runnable
     //Update Sensor UI with PageViewer from Sensor Updates
+    @SuppressLint("NotifyDataSetChanged")
     private fun sensorMethod() {
-
             setContentView(R.layout.home)
             //permission recheck on load
             if (ContextCompat.checkSelfPermission(this, PERMISSION_BODY_SENSORS)
@@ -191,24 +198,38 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
             )
             val adapter = ViewPagerAdapter(images)
             viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                @SuppressLint("NotifyDataSetChanged")
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     //navigation update
-                    if(position == 0) {
-                        findViewById<ImageView>(R.id.maindot1).visibility = View.VISIBLE
-                        findViewById<ImageView>(R.id.maindot2).visibility = View.GONE
-                        findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
-                        isSensorScreen = true
-                    } else if (position == 1) {
-                        findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
-                        findViewById<ImageView>(R.id.maindot2).visibility = View.VISIBLE
-                        findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
-                        isSensorScreen = false
-                    } else if (position == 2) {
-                        findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
-                        findViewById<ImageView>(R.id.maindot2).visibility = View.GONE
-                        findViewById<ImageView>(R.id.maindot3).visibility = View.VISIBLE
-                        isSensorScreen = false
+                    when (position) {
+                        0 -> {
+                            findViewById<ImageView>(R.id.maindot1).visibility = View.VISIBLE
+                            findViewById<ImageView>(R.id.maindot2).visibility = View.GONE
+                            findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
+                            isSensorScreen = true
+                            uiUpdateRunnable = Runnable {
+                                adapter.notifyDataSetChanged()
+                                viewPager.adapter = adapter
+                                uiUpdateHandler.postDelayed(uiUpdateRunnable, 2000L)
+                            }
+                            // Start the UI update loop
+                            uiUpdateHandler.postDelayed(uiUpdateRunnable, 2000L)
+                        }
+                        1 -> {
+                            findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
+                            findViewById<ImageView>(R.id.maindot2).visibility = View.VISIBLE
+                            findViewById<ImageView>(R.id.maindot3).visibility = View.GONE
+                            if(isSensorScreen) {
+                                uiUpdateHandler.removeCallbacksAndMessages(null)}
+                            isSensorScreen = false
+                        }
+                        2 -> {
+                            findViewById<ImageView>(R.id.maindot1).visibility = View.GONE
+                            findViewById<ImageView>(R.id.maindot2).visibility = View.GONE
+                            findViewById<ImageView>(R.id.maindot3).visibility = View.VISIBLE
+                            isSensorScreen = false
+                        }
                     }
                 }
             })
@@ -220,11 +241,9 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
             }
             if(backvariable) {
                 backvariable = false
-                //not working still
-                //viewPager.currentItem = 2
+                viewPager.setCurrentItem(2, false)
             }
             timeSet()
-
     }
     // Set home time
     fun timeSet() {
@@ -234,13 +253,13 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
         timeEdit.setText(curTime)
     }
     //timer settings
-    fun timerSet(view: View) {
+    fun timerSet() {
         handler = Handler(Looper.getMainLooper())
-        if (!isRunning) {
-            startTime = System.currentTimeMillis()
+        startTime = if (!isRunning) {
+            System.currentTimeMillis()
         } else {
             // When the timer is resumed, update the start time to maintain continuity
-            startTime = System.currentTimeMillis() - elapsedTime
+            System.currentTimeMillis() - elapsedTime
         }
         runnable = object : Runnable {
             override fun run() {
@@ -261,13 +280,13 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
         }
         handler.post(runnable)
     }
-    fun runningtimerSet(view: View) {
+    fun runningtimerSet() {
         runninghandler = Handler(Looper.getMainLooper())
-        if (!runningisRunning) {
-            runningstartTime = System.currentTimeMillis()
+        runningstartTime = if (!runningisRunning) {
+            System.currentTimeMillis()
         } else {
             // When the timer is resumed, update the start time to maintain continuity
-            runningstartTime = System.currentTimeMillis() - runningelapsedTime
+            System.currentTimeMillis() - runningelapsedTime
         }
         runningrunnable = object : Runnable {
             override fun run() {
@@ -280,7 +299,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
                 val time = String.format("%02d:%02d:%02d", hours, minutes, seconds)
                 //using estimated steps than actual for now
                 //val km = String.format("%.2f km", stepCount * 0.000762)
-                val km = String.format("%.2f km", (runningelapsedTime * .000002).toDouble())
+                val km = String.format("%.2f km", (runningelapsedTime * .000002))
                 //update timer UI
                 findViewById<TextView>(R.id.runningText).text = time
                 findViewById<TextView>(R.id.runningkm).text = km
@@ -292,41 +311,62 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
         runninghandler.post(runningrunnable)
     }
     //OnClicks for buttons
+    @SuppressLint("SetTextI18n")
     override fun onClick(view: View?) {
         val id = view?.id
         //sync buttons
         if(id == R.id.buttonSync) {
             findViewById<Button>(R.id.buttonSync).visibility = View.GONE
             findViewById<FrameLayout>(R.id.workoutstart).visibility = View.VISIBLE
+            val gradientDrawable = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 60f
+            }
+            gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.darkgray))
+            findViewById<Button>(R.id.workoutbutton1).background = gradientDrawable
+            findViewById<Button>(R.id.workoutbutton2).background = gradientDrawable
+            findViewById<Button>(R.id.workoutcompletebutton).background = gradientDrawable
+            val gradientDrawable2 = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 60f
+            }
+            gradientDrawable2.setColor(ContextCompat.getColor(this@MainActivity, R.color.royalPurple))
+            findViewById<Button>(R.id.finishbutton).background = gradientDrawable2
         }
         else if(id == R.id.checkbutton1) {
-            findViewById<Button>(R.id.workoutbutton1).setBackgroundColor(getResources().getColor(R.color.passGreen))
+            editButtonInfo(findViewById<Button>(R.id.workoutbutton1), true)
         }
         else if(id == R.id.xbutton1) {
-            findViewById<Button>(R.id.workoutbutton1).setBackgroundColor(getResources().getColor(R.color.deleteRed))
+            editButtonInfo(findViewById<Button>(R.id.workoutbutton1), false)
         }
         else if(id == R.id.checkbutton2) {
-            findViewById<Button>(R.id.workoutbutton2).setBackgroundColor(getResources().getColor(R.color.passGreen))
+            editButtonInfo(findViewById<Button>(R.id.workoutbutton2), true)
         }
         else if(id == R.id.xbutton2) {
-            findViewById<Button>(R.id.workoutbutton2).setBackgroundColor(getResources().getColor(R.color.deleteRed))
+            editButtonInfo(findViewById<Button>(R.id.workoutbutton2), false)
+        }
+        else if(id == R.id.finishbutton) {
+            findViewById<Button>(R.id.buttonSync).visibility = View.VISIBLE
+            findViewById<FrameLayout>(R.id.workoutstart).visibility = View.GONE
         }
         else if(id == R.id.buttonRuntimePermission) {
             requestPermission()
             findViewById<Button>(R.id.buttonRuntimePermission).visibility = View.GONE
         }
+        //running buttons
         else if(id == R.id.buttonRunning) {
             setContentView(R.layout.running)
-            runningtimerSet(view)
+            timeSet()
+            runningtimerSet()
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.runninglayout), R.layout.buttonsfake, this)
         }
-        //running buttons
         else if(id == R.id.runningbuttonplay) {
             if(findViewById<ImageView>(R.id.runningPlay).visibility == View.VISIBLE) {
                 findViewById<ImageView>(R.id.runningPlay).visibility = View.GONE
                 findViewById<ImageView>(R.id.runningPause).visibility = View.VISIBLE
                 //start time
                 runningisRunning = true
-                runningtimerSet(view)
+                runningtimerSet()
             } else {
                 findViewById<ImageView>(R.id.runningPlay).visibility = View.VISIBLE
                 findViewById<ImageView>(R.id.runningPause).visibility = View.GONE
@@ -339,7 +379,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
             findViewById<ImageView>(R.id.runningPause).visibility = View.GONE
             //pause and reset time
             runningisRunning = false
-            runningtimerSet(view)
+            runningtimerSet()
             runninghandler.postDelayed({
                 //reset the timer after delay to finish tasks
                 findViewById<TextView>(R.id.runningText).text = "00:00:00"
@@ -347,18 +387,20 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
                 runningelapsedTime = 0
             },50)
         }
+        //timer buttons
         else if(id == R.id.buttonStopwatch) {
             setContentView(R.layout.timer)
             timeSet()
+            timeSet()
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.timerlayout), R.layout.buttonsfake, this)
         }
-        //timer buttons
         else if(id == R.id.Timerbuttonplay) {
             if(findViewById<ImageView>(R.id.TimerPlay).visibility == View.VISIBLE) {
                 findViewById<ImageView>(R.id.TimerPlay).visibility = View.GONE
                 findViewById<ImageView>(R.id.TimerPause).visibility = View.VISIBLE
                 //start time
                 isRunning = true
-                timerSet(view)
+                timerSet()
             } else {
                 findViewById<ImageView>(R.id.TimerPlay).visibility = View.VISIBLE
                 findViewById<ImageView>(R.id.TimerPause).visibility = View.GONE
@@ -371,7 +413,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
             findViewById<ImageView>(R.id.TimerPause).visibility = View.GONE
             //pause and reset time
             isRunning = false
-            timerSet(view)
+            timerSet()
             handler.postDelayed({
                 //reset the timer after delay to finish tasks
                 findViewById<TextView>(R.id.timerText).text = "00:00:00:000"
@@ -382,15 +424,103 @@ class MainActivity : ComponentActivity(), View.OnClickListener, SensorEventListe
         //user button
         else if(id == R.id.buttonUser) {
             setContentView(R.layout.user)
+            timeSet()
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.userlayout), R.layout.buttonsfake, this)
         }
         //settings button
         else if(id == R.id.buttonSettings) {
             setContentView(R.layout.settings)
+            timeSet()
+            val gradientDrawable = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 60f
+            }
+            findViewById<Button>(R.id.settingsbutton1).background = gradientDrawable
+            findViewById<Button>(R.id.settingsbutton2).background = gradientDrawable
+            homeAnimation = Scene.getSceneForLayout(findViewById(R.id.settingslayout), R.layout.buttonsfake, this)
+            //settings saved
+            findViewById<Switch>(R.id.notifswitch1).isChecked = notif
         }
-        //back button, temp for now
-        else if(id == R.id.tempback1) {
-            backvariable = true
+        else if(id == R.id.syncbuttonsettings) {
+            //sync to bluetooth phone
+        }
+        else if(id == R.id.notifswitch1) {
+            notif = findViewById<Switch>(R.id.notifswitch1).isChecked == true
+        }
+        //if lost
+        else {
             sensorMethod()
         }
+    }
+
+    fun editButtonInfo(view: View, check:Boolean){
+        val gradientDrawable = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = 60f
+        }
+        if (check) {gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.passGreen))}
+        else {gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.deleteRed))}
+        view.background = gradientDrawable
+    }
+
+    //on touch events for gesturing
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        gestureDetector.onTouchEvent(event)
+        return super.dispatchTouchEvent(event)
+    }
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        gestureDetector.onTouchEvent(event)
+        when (event.action){
+            0->
+            {
+                x1 = event.x
+                y1 = event.y
+            }
+            1->
+            {
+                x2 = event.x
+                y2 = event.y
+                val valueX:Float = x2-x1
+                //val valueY:Float = y2-y1
+                if(abs(valueX) > MIN_DISTANCE)
+                {
+                    if (x2 > x1)
+                    {
+                        //Toast.makeText(this,"Right swipe", Toast.LENGTH_SHORT).show()
+                        //in case timers running
+                        backvariable = true
+                        isRunning = false
+                        runningisRunning = false
+                        //go to home after delay with transition slide
+                        sensorHandler.postDelayed({
+                            window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
+                            val slide: Transition = Slide(Gravity.END)
+                            TransitionManager.go(homeAnimation, slide)
+                            timeSet()
+                        }, 50)
+                        sensorHandler.postDelayed({
+                            sensorMethod()
+                        }, 700)
+                    }
+                }
+            }
+        }
+        return super.onTouchEvent(event)
+    }
+    override fun onDown(e: MotionEvent): Boolean {
+        return false
+    }
+    override fun onShowPress(e: MotionEvent) {
+    }
+    override fun onSingleTapUp(e: MotionEvent): Boolean {
+        return false
+    }
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+        return false
+    }
+    override fun onLongPress(e: MotionEvent) {
+    }
+    override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+        return false
     }
 }

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:viewBindingIgnore="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/gradientblackbackground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:background="@null"
+            android:hint="18:03"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/imageView"
+            app:layout_constraintStart_toStartOf="@+id/imageView"
+            app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+        <ImageView
+            android:id="@+id/nonmaindot2"
+            android:layout_width="12dp"
+            android:layout_height="10dp"
+            android:layout_marginBottom="6dp"
+            android:src="@drawable/nonmaindot"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="@+id/imageView"
+            app:layout_constraintStart_toStartOf="@+id/imageView" />
+
+        <ImageView
+            android:id="@+id/nonmaindot1"
+            android:layout_width="12dp"
+            android:layout_height="10dp"
+            android:layout_marginEnd="35dp"
+            android:layout_marginBottom="6dp"
+            android:src="@drawable/nonmaindot"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="@+id/imageView"
+            app:layout_constraintStart_toStartOf="@+id/imageView" />
+
+        <ImageView
+            android:id="@+id/maindot3"
+            android:layout_width="15dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="34dp"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/maindot"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="@+id/imageView"
+            app:layout_constraintStart_toStartOf="@+id/imageView" />
+
+        <Button
+            android:id="@+id/buttonSettings"
+            android:layout_width="65dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="65dp"
+            android:layout_marginTop="81dp"
+            android:layout_marginEnd="-6dp"
+            android:layout_marginBottom="5dp"
+            android:background="#00FFFFFF"
+            android:clickable="true"
+            android:foreground="@drawable/multilayersettings"
+            android:onClick="onClick"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/buttonRunning"
+            android:layout_width="65dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="33dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="110dp"
+            android:layout_marginBottom="110dp"
+            android:background="#00FFFFFF"
+            android:clickable="true"
+            android:foreground="@drawable/multilayerrunning"
+            android:onClick="onClick"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/buttonUser"
+            android:layout_width="65dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="65dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="-6dp"
+            android:layout_marginBottom="110dp"
+            android:background="#00FFFFFF"
+            android:clickable="true"
+            android:foreground="@drawable/multilayeruser"
+            android:onClick="onClick"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/buttonStopwatch"
+            android:layout_width="65dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="33dp"
+            android:layout_marginTop="81dp"
+            android:layout_marginEnd="110dp"
+            android:layout_marginBottom="5dp"
+            android:background="#00FFFFFF"
+            android:clickable="true"
+            android:foreground="@drawable/multilayertimer"
+            android:onClick="onClick"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
