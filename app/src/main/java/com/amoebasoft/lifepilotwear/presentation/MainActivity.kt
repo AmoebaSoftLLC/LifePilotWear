@@ -74,8 +74,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     private val sensorHandler = Handler(Looper.getMainLooper())
     var x2:Float = 0.0f
     var x1:Float = 0.0f
-    var y2:Float = 0.0f
-    var y1:Float = 0.0f
     //setting variables
     private var notif: Boolean = true
     companion object {
@@ -163,7 +161,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             //notif
             //bluetooth
         }
-        val customScrollView = CustomScrollView(this, this)
         //gesture
         gestureDetector = GestureDetector(this, this)
         //Sensor Requirements
@@ -464,17 +461,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else {gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.deleteRed))}
         view.background = gradientDrawable
     }
+    //gesture allowance for scrollview
     class CustomScrollView : ScrollView {
         private val mainActivityInstance: MainActivity
-        constructor(context: Context, mainActivityInstance: MainActivity) : super(context) {
-            this.mainActivityInstance = mainActivityInstance
-        }
         constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-            // Initialize mainActivityInstance to avoid property initialization error
             this.mainActivityInstance = context as MainActivity
         }
         constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {
-            // Initialize mainActivityInstance to avoid property initialization error
             this.mainActivityInstance = context as MainActivity
         }
         private var initialX = 0f
@@ -491,20 +484,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     val deltaX = Math.abs(ev.x - initialX)
                     val deltaY = Math.abs(ev.y - initialY)
                     return if (deltaX > deltaY && deltaX > MIN_DISTANCE) {
-                        // Horizontal swipe detected, don't intercept touch event
                         mainActivityInstance.onBackSwipe()
                         false
                     } else {
-                        // Vertical scroll detected, let ScrollView handle touch event
-                        mainActivityInstance.backvariable = true
                         super.onInterceptTouchEvent(ev)
                     }
                 }
                 else -> {
-                    /*if (!super.onInterceptTouchEvent(ev)) {
-                        scrollOnBackSwipe()
-                    }*/
-                    mainActivityInstance.backvariable = true
                     return super.onInterceptTouchEvent(ev)
                 }
             }
