@@ -3,6 +3,7 @@ package com.amoebasoft.lifepilotwear.presentation
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.hardware.Sensor
@@ -16,6 +17,7 @@ import android.transition.Scene
 import android.transition.Slide
 import android.transition.Transition
 import android.transition.TransitionManager
+import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
@@ -157,7 +159,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         setContent {
             setContentView(R.layout.home)
             sensorMethod()
-
             //settings saved inputs
             //notif
             //bluetooth
@@ -462,6 +463,53 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         if (check) {gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.passGreen))}
         else {gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.deleteRed))}
         view.background = gradientDrawable
+    }
+    inner class CustomScrollView : ScrollView {
+        private var initialX = 0f
+        private var initialY = 0f
+
+        constructor(context: Context) : super(context)
+        constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+        constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle)
+        override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+            when (ev.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    initialX = ev.x
+                    initialY = ev.y
+                    return super.onInterceptTouchEvent(ev)
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val deltaX = Math.abs(ev.x - initialX)
+                    val deltaY = Math.abs(ev.y - initialY)
+                    return if (deltaX > deltaY) {
+                        // Horizontal swipe detected, don't intercept touch event
+                        false
+                    } else {
+                        // Vertical scroll detected, let ScrollView handle touch event
+                        super.onInterceptTouchEvent(ev)
+                    }
+                }
+                else -> {
+                    if (!super.onInterceptTouchEvent(ev)) {
+                        //in case timers running
+                        /*backvariable = true
+                        isRunning = false
+                        runningisRunning = false
+                        //go to home after delay with transition slide
+                        sensorHandler.postDelayed({
+                            window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
+                            val slide: Transition = Slide(Gravity.END)
+                            TransitionManager.go(homeAnimation, slide)
+                            timeSet()
+                        }, 50)
+                        sensorHandler.postDelayed({
+                            sensorMethod()
+                        }, 700)*/
+                    }
+                    return super.onInterceptTouchEvent(ev)
+                }
+            }
+        }
     }
     //on touch events for gesturing
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
