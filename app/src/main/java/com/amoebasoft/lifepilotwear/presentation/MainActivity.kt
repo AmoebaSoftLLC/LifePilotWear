@@ -163,6 +163,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             //notif
             //bluetooth
         }
+        val customScrollView = CustomScrollView(this, this)
         //gesture
         gestureDetector = GestureDetector(this, this)
         //Sensor Requirements
@@ -464,13 +465,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else {gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.deleteRed))}
         view.background = gradientDrawable
     }
-    inner class CustomScrollView : ScrollView {
+    class CustomScrollView : ScrollView {
+        private val mainActivityInstance: MainActivity
+        constructor(context: Context, mainActivityInstance: MainActivity) : super(context) {
+            this.mainActivityInstance = mainActivityInstance
+        }
+        constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+            // Initialize mainActivityInstance to avoid property initialization error
+            this.mainActivityInstance = context as MainActivity
+        }
+        constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {
+            // Initialize mainActivityInstance to avoid property initialization error
+            this.mainActivityInstance = context as MainActivity
+        }
         private var initialX = 0f
         private var initialY = 0f
-
-        constructor(context: Context) : super(context)
-        constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
-        constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle)
         override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
             when (ev.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -481,8 +490,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 MotionEvent.ACTION_MOVE -> {
                     val deltaX = Math.abs(ev.x - initialX)
                     val deltaY = Math.abs(ev.y - initialY)
-                    return if (deltaX > deltaY) {
+                    return if (deltaX > deltaY && deltaX > MIN_DISTANCE) {
                         // Horizontal swipe detected, don't intercept touch event
+                        mainActivityInstance.onBackSwipe()
                         false
                     } else {
                         // Vertical scroll detected, let ScrollView handle touch event
@@ -490,22 +500,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     }
                 }
                 else -> {
-                    if (!super.onInterceptTouchEvent(ev)) {
-                        //in case timers running
-                        /*backvariable = true
-                        isRunning = false
-                        runningisRunning = false
-                        //go to home after delay with transition slide
-                        sensorHandler.postDelayed({
-                            window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
-                            val slide: Transition = Slide(Gravity.END)
-                            TransitionManager.go(homeAnimation, slide)
-                            timeSet()
-                        }, 50)
-                        sensorHandler.postDelayed({
-                            sensorMethod()
-                        }, 700)*/
-                    }
+                    /*if (!super.onInterceptTouchEvent(ev)) {
+                        scrollOnBackSwipe()
+                    }*/
                     return super.onInterceptTouchEvent(ev)
                 }
             }
@@ -531,26 +528,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 {
                     if (x2 > x1)
                     {
-                        //in case timers running
-                        backvariable = true
-                        isRunning = false
-                        runningisRunning = false
-                        //go to home after delay with transition slide
-                        sensorHandler.postDelayed({
-                            window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
-                            val slide: Transition = Slide(Gravity.END)
-                            TransitionManager.go(homeAnimation, slide)
-                            timeSet()
-                        }, 50)
-                        sensorHandler.postDelayed({
-                            sensorMethod()
-                        }, 700)
+                        onBackSwipe()
                         return true
                     }
                 }
             }
         }
         return super.onTouchEvent(event)
+    }
+    fun onBackSwipe() {
+        //in case timers running
+        backvariable = true
+        isRunning = false
+        runningisRunning = false
+        //go to home after delay with transition slide
+        sensorHandler.postDelayed({
+            window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
+            val slide: Transition = Slide(Gravity.END)
+            TransitionManager.go(homeAnimation, slide)
+            timeSet()
+        }, 50)
+        sensorHandler.postDelayed({
+            sensorMethod()
+        }, 700)
     }
     override fun onDown(e: MotionEvent): Boolean {
         return false
