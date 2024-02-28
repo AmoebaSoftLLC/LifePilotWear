@@ -473,19 +473,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             0->
             {
                 x1 = event.x
-                y1 = event.y
             }
             1->
             {
                 x2 = event.x
-                y2 = event.y
                 val valueX:Float = x2-x1
-                //val valueY:Float = y2-y1
                 if(abs(valueX) > MIN_DISTANCE)
                 {
                     if (x2 > x1)
                     {
-                        //Toast.makeText(this,"Right swipe", Toast.LENGTH_SHORT).show()
                         //in case timers running
                         backvariable = true
                         isRunning = false
@@ -500,6 +496,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         sensorHandler.postDelayed({
                             sensorMethod()
                         }, 700)
+                        return true
                     }
                 }
             }
