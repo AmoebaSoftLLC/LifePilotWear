@@ -244,7 +244,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 viewPager.currentItem = 1
             }
             if(backvariable) {
-                backvariable = false
                 viewPager.setCurrentItem(2, false)
             }
             timeSet()
@@ -541,7 +540,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     }
     fun onBackSwipe() {
         //in case timers running
-        backvariable = true
         isRunning = false
         runningisRunning = false
         //go to home after delay with transition slide
@@ -552,7 +550,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             timeSet()
         }, 50)
         sensorHandler.postDelayed({
+            backvariable = true
             sensorMethod()
+            backvariable = false
         }, 700)
     }
     override fun onDown(e: MotionEvent): Boolean {
