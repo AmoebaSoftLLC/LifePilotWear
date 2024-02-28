@@ -485,6 +485,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 MotionEvent.ACTION_DOWN -> {
                     initialX = ev.x
                     initialY = ev.y
+                    mainActivityInstance.backvariable = true
                     return super.onInterceptTouchEvent(ev)
                 }
                 MotionEvent.ACTION_MOVE -> {
@@ -496,6 +497,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                         false
                     } else {
                         // Vertical scroll detected, let ScrollView handle touch event
+                        mainActivityInstance.backvariable = true
                         super.onInterceptTouchEvent(ev)
                     }
                 }
@@ -503,6 +505,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     /*if (!super.onInterceptTouchEvent(ev)) {
                         scrollOnBackSwipe()
                     }*/
+                    mainActivityInstance.backvariable = true
                     return super.onInterceptTouchEvent(ev)
                 }
             }
