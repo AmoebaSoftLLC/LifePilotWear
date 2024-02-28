@@ -453,7 +453,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             sensorMethod()
         }
     }
-
     fun editButtonInfo(view: View, check:Boolean){
         val gradientDrawable = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
@@ -463,7 +462,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else {gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.deleteRed))}
         view.background = gradientDrawable
     }
-
     //on touch events for gesturing
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
