@@ -3,7 +3,11 @@ package com.amoebasoft.lifepilotwear.presentation
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothSocket
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.hardware.Sensor
@@ -36,6 +40,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.amoebasoft.lifepilotwear.R
+import java.io.OutputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -50,6 +55,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     private var mHeartRateSensor : Sensor ?= null
     private var mStepDetectSensor : Sensor ?= null
     private val PERMISSION_BODY_SENSORS = Manifest.permission.BODY_SENSORS
+    private val PERMISSION_BT_SENSORS = Manifest.permission.BLUETOOTH
     private var lastStepTimeNs: Long = 0
     private var stepCount: Int = 0
     private var start = 0
@@ -157,6 +163,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         setContent {
             setContentView(R.layout.home)
             sensorMethod()
+            val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+            if (bluetoothAdapter == null) {
+                // Device doesn't support Bluetooth
+            } else {
+                if (!bluetoothAdapter.isEnabled()) {
+                    // Bluetooth is not enabled, prompt user to enable it
+                    val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+                } else {
+                    // Bluetooth is enabled, proceed with your Bluetooth tasks
+                }
+            }
             //settings saved inputs
             //notif
             //bluetooth
@@ -443,6 +461,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         }
         else if(id == R.id.syncbuttonsettings) {
             //sync to bluetooth phone
+            val device: BluetoothDevice? = bluetoothAdapter.getRemoteDevice(deviceAddress)
+            val socket: BluetoothSocket = device.createRfcommSocketToServiceRecord(MY_UUID)
+            socket.connect()
+            val outputStream: OutputStream = socket.outputStream
+            //outputStream.write(yourData.getBytes())
         }
         else if(id == R.id.notifswitch1) {
             notif = findViewById<Switch>(R.id.notifswitch1).isChecked == true
