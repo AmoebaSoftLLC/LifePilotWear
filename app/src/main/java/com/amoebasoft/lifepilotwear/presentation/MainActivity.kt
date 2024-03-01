@@ -36,6 +36,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.amoebasoft.lifepilotwear.R
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.wearable.MessageClient
+import com.google.android.gms.wearable.MessageEvent
+import com.google.android.gms.wearable.Wearable
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -76,6 +80,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     var x1:Float = 0.0f
     //setting variables
     private var notif: Boolean = true
+    val messageClient: MessageClient = Wearable.getMessageClient(this)
     companion object {
         const val MIN_DISTANCE = 50
         private const val PERMISSION_REQUEST_BODY_SENSORS = 100
@@ -444,7 +449,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         }
         else if(id == R.id.syncbuttonsettings) {
             //sync to bluetooth phone
-
+            //send data
+            val data = "Your data to send".toByteArray()
+            val sendMessageTask: Task<Int> = messageClient.sendMessage("phone-node-id", "/path", data)
+            //receive data
+            val messageClient: MessageClient = Wearable.getMessageClient(this)
+            messageClient.addListener(object : MessageClient.OnMessageReceivedListener {
+                override fun onMessageReceived(messageEvent: MessageEvent) {
+                    // Handle received message
+                    val data = String(messageEvent.data, Charsets.UTF_8)
+                }
+            })
         }
         else if(id == R.id.notifswitch1) {
             notif = findViewById<Switch>(R.id.notifswitch1).isChecked == true
