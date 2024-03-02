@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     var x1:Float = 0.0f
     //setting variables
     private var notif: Boolean = true
-    val messageClient: MessageClient = Wearable.getMessageClient(this)
+    //val messageClient: MessageClient = Wearable.getMessageClient(this)
     companion object {
         const val MIN_DISTANCE = 50
         private const val PERMISSION_REQUEST_BODY_SENSORS = 100
