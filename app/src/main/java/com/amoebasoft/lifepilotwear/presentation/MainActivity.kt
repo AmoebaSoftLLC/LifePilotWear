@@ -450,7 +450,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else if(id == R.id.syncbuttonsettings) {
             //sync to bluetooth phone
             //send data
-            val data = "Your data to send".toByteArray()
+            /*val data = "data to send".toByteArray()
             val sendMessageTask: Task<Int> = messageClient.sendMessage("phone-node-id", "/path", data)
             //receive data
             val messageClient: MessageClient = Wearable.getMessageClient(this)
@@ -459,7 +459,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     // Handle received message
                     val data = String(messageEvent.data, Charsets.UTF_8)
                 }
-            })
+            })*/
         }
         else if(id == R.id.notifswitch1) {
             notif = findViewById<Switch>(R.id.notifswitch1).isChecked == true
