@@ -3,6 +3,7 @@ package com.amoebasoft.lifepilotwear.presentation
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.hardware.Sensor
@@ -16,6 +17,7 @@ import android.transition.Scene
 import android.transition.Slide
 import android.transition.Transition
 import android.transition.TransitionManager
+import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
@@ -24,8 +26,10 @@ import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.ScrollView
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +37,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.amoebasoft.lifepilotwear.R
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+import com.google.android.gms.wearable.MessageClient
+import com.google.android.gms.wearable.MessageEvent
+import com.google.android.gms.wearable.Node
+import com.google.android.gms.wearable.Wearable
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -71,10 +81,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     private val sensorHandler = Handler(Looper.getMainLooper())
     var x2:Float = 0.0f
     var x1:Float = 0.0f
-    var y2:Float = 0.0f
-    var y1:Float = 0.0f
     //setting variables
     private var notif: Boolean = true
+    private var routine: String = ""
     companion object {
         const val MIN_DISTANCE = 50
         private const val PERMISSION_REQUEST_BODY_SENSORS = 100
@@ -149,6 +158,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             requestPermissionLauncher.launch(PERMISSION_BODY_SENSORS)
         }
     }
+
     //OnStartup for App
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -240,7 +250,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                 viewPager.currentItem = 1
             }
             if(backvariable) {
-                backvariable = false
                 viewPager.setCurrentItem(2, false)
             }
             timeSet()
@@ -443,6 +452,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         }
         else if(id == R.id.syncbuttonsettings) {
             //sync to bluetooth phone
+            blueToothSync()
         }
         else if(id == R.id.notifswitch1) {
             notif = findViewById<Switch>(R.id.notifswitch1).isChecked == true
@@ -452,7 +462,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             sensorMethod()
         }
     }
-
     fun editButtonInfo(view: View, check:Boolean){
         val gradientDrawable = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
@@ -462,7 +471,41 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         else {gradientDrawable.setColor(ContextCompat.getColor(this@MainActivity, R.color.deleteRed))}
         view.background = gradientDrawable
     }
-
+    //gesture allowance for scrollview
+    class CustomScrollView : ScrollView {
+        private val mainActivityInstance: MainActivity
+        constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+            this.mainActivityInstance = context as MainActivity
+        }
+        constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {
+            this.mainActivityInstance = context as MainActivity
+        }
+        private var initialX = 0f
+        private var initialY = 0f
+        override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+            when (ev.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    initialX = ev.x
+                    initialY = ev.y
+                    mainActivityInstance.backvariable = true
+                    return super.onInterceptTouchEvent(ev)
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val deltaX = Math.abs(ev.x - initialX)
+                    val deltaY = Math.abs(ev.y - initialY)
+                    return if (deltaX > deltaY && deltaX > MIN_DISTANCE) {
+                        mainActivityInstance.onBackSwipe()
+                        false
+                    } else {
+                        super.onInterceptTouchEvent(ev)
+                    }
+                }
+                else -> {
+                    return super.onInterceptTouchEvent(ev)
+                }
+            }
+        }
+    }
     //on touch events for gesturing
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
@@ -474,38 +517,39 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             0->
             {
                 x1 = event.x
-                y1 = event.y
             }
             1->
             {
                 x2 = event.x
-                y2 = event.y
                 val valueX:Float = x2-x1
-                //val valueY:Float = y2-y1
                 if(abs(valueX) > MIN_DISTANCE)
                 {
                     if (x2 > x1)
                     {
-                        //Toast.makeText(this,"Right swipe", Toast.LENGTH_SHORT).show()
-                        //in case timers running
-                        backvariable = true
-                        isRunning = false
-                        runningisRunning = false
-                        //go to home after delay with transition slide
-                        sensorHandler.postDelayed({
-                            window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
-                            val slide: Transition = Slide(Gravity.END)
-                            TransitionManager.go(homeAnimation, slide)
-                            timeSet()
-                        }, 50)
-                        sensorHandler.postDelayed({
-                            sensorMethod()
-                        }, 700)
+                        onBackSwipe()
+                        return true
                     }
                 }
             }
         }
         return super.onTouchEvent(event)
+    }
+    fun onBackSwipe() {
+        //in case timers running
+        isRunning = false
+        runningisRunning = false
+        //go to home after delay with transition slide
+        sensorHandler.postDelayed({
+            window.setBackgroundDrawableResource(R.drawable.gradientblackbackground)
+            val slide: Transition = Slide(Gravity.END)
+            TransitionManager.go(homeAnimation, slide)
+            timeSet()
+        }, 50)
+        sensorHandler.postDelayed({
+            backvariable = true
+            sensorMethod()
+            backvariable = false
+        }, 700)
     }
     override fun onDown(e: MotionEvent): Boolean {
         return false
@@ -522,5 +566,51 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     }
     override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
         return false
+    }
+
+    fun blueToothSync() {
+        val messageClient: MessageClient = Wearable.getMessageClient(this)
+        // Send data
+        val data = (ViewPagerAdapter.btBPM + ViewPagerAdapter.btCAL + ViewPagerAdapter.btSteps).toByteArray()
+        try {
+            val nodes: List<Node> = Tasks.await(Wearable.getNodeClient(this).connectedNodes)
+            var phoneNodeId: String? = null
+            for (node in nodes) {
+                if (node.isNearby) {
+                    phoneNodeId = node.id
+                    break
+                }
+            }
+            if (phoneNodeId != null) {
+                val sendMessageTask: Task<Int> = messageClient.sendMessage(phoneNodeId, "/weardata", data)
+                sendMessageTask.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Message Sent Successfully
+                        Toast.makeText(this, "Data Sent", Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
+                        // Failed to send message
+                        Toast.makeText(this, "Bluetooth Error", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            } else {
+                // No connected phone found
+                Toast.makeText(this, "Phone not connected", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // exceptions
+            Toast.makeText(this, "Error #404", Toast.LENGTH_SHORT)
+                .show()
+        }
+        // Receive data
+        messageClient.addListener(object : MessageClient.OnMessageReceivedListener {
+            override fun onMessageReceived(messageEvent: MessageEvent) {
+                val receivedData = String(messageEvent.data, Charsets.UTF_8)
+                routine = receivedData
+            }
+        })
     }
 }

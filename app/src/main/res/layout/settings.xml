@@ -43,7 +43,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <ScrollView
+        <view class="com.amoebasoft.lifepilotwear.presentation.MainActivity$CustomScrollView"
             android:id="@+id/SettingsListScroll"
             android:layout_width="162dp"
             android:layout_height="115dp"
@@ -149,5 +149,5 @@
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
                 </LinearLayout>
-        </ScrollView>
+        </view>
 </androidx.constraintlayout.widget.ConstraintLayout>
