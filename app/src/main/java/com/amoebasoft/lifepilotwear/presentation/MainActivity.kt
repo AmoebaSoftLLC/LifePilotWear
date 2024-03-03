@@ -572,8 +572,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     fun blueToothSync() {
         val messageClient: MessageClient = Wearable.getMessageClient(this)
         // Send data
-        val data = "data to send".toByteArray()
-
+        val data = (ViewPagerAdapter.btBPM + ViewPagerAdapter.btCAL + ViewPagerAdapter.btSteps).toByteArray()
         try {
             val nodes: List<Node> = Tasks.await(Wearable.getNodeClient(this).connectedNodes)
             var phoneNodeId: String? = null

@@ -17,12 +17,16 @@ class ViewPagerAdapter (
     inner class ViewPagerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     //Active layout selected on swipe
     private var active = R.layout.quickdata
-    //Global variable to for bpm sensor
     companion object {
+        //main to local variable for bpm sensor
         var heartRateSensorValue: Float = 0f
         var accelSensorValue: Int = 0
         var calBurned: Float = 0f
         var extraCal: Float = 0f
+        //local to main variables for BT
+        var btBPM: String = ""
+        var btCAL: String = ""
+        var btSteps: String = ""
     }
     //Create ViewPager
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerViewHolder {
@@ -55,15 +59,15 @@ class ViewPagerAdapter (
             //sensor adjustments
             val bpmTextView = inflatedView.findViewById<TextView>(R.id.bpmtext)
             bpmTextView.text = heartRateSensorValue.toString()
+            btBPM = heartRateSensorValue.toString()
             val kcalTextView = inflatedView.findViewById<TextView>(R.id.kcaltext)
             calBurned =  3.0f * 72.57f * (accelSensorValue / 1300.0f)
             extraCal = if (heartRateSensorValue > 99) {5.0f} else {0f}
             kcalTextView.text = (calBurned + extraCal).toString()
+            btCAL = (calBurned + extraCal).toString()
             val stepTextView = inflatedView.findViewById<TextView>(R.id.setpstext)
             stepTextView.text = accelSensorValue.toString()
-
-            //save data to BT variables
-
+            btSteps = accelSensorValue.toString()
         }
     }
 }
