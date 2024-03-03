@@ -35,6 +35,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.amoebasoft.lifepilotwear.R
 import com.google.android.gms.tasks.Task
@@ -45,7 +46,6 @@ import com.google.android.gms.wearable.Node
 import com.google.android.gms.wearable.Wearable
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 import kotlin.math.abs
 
 class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListener, GestureDetector.OnGestureListener {
@@ -570,31 +570,42 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     }
 
     fun blueToothSync() {
-        //send data
+        val messageClient: MessageClient = Wearable.getMessageClient(this)
+        // Send data
         val data = "data to send".toByteArray()
 
-        val nodes: List<Node> = Tasks.await(Wearable.getNodeClient(this).connectedNodes)
-        var phoneNodeId: String? = null
-        for (node in nodes) {
-            if (node.isNearby) {
-                phoneNodeId = node.id
-                break
+        try {
+            val nodes: List<Node> = Tasks.await(Wearable.getNodeClient(this).connectedNodes)
+            var phoneNodeId: String? = null
+            for (node in nodes) {
+                if (node.isNearby) {
+                    phoneNodeId = node.id
+                    break
+                }
             }
+
+            if (phoneNodeId != null) {
+                val sendMessageTask: Task<Int> = messageClient.sendMessage(phoneNodeId!!, "/weardata", data)
+                sendMessageTask.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Message Sent Successfully
+                    } else {
+                        // Failed to send message
+                    }
+                }
+            } else {
+                // No connected phone found
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // exceptions
         }
 
-        if (phoneNodeId != null) {
-            val sendMessageTask: Task<Int> = messageClient.sendMessage(phoneNodeId!!, "/path", data)
-            // Message Sent
-        } else {
-            // (no connected phone found)
-        }
-
-        //receive data
-        val messageClient: MessageClient = Wearable.getMessageClient(this)
+        // Receive data
         messageClient.addListener(object : MessageClient.OnMessageReceivedListener {
             override fun onMessageReceived(messageEvent: MessageEvent) {
-                // Handle received message
-                val data = String(messageEvent.data, Charsets.UTF_8)
+                val receivedData = String(messageEvent.data, Charsets.UTF_8)
+                // Process received data
             }
         })
     }

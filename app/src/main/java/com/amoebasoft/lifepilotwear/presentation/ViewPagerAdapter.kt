@@ -61,6 +61,9 @@ class ViewPagerAdapter (
             kcalTextView.text = (calBurned + extraCal).toString()
             val stepTextView = inflatedView.findViewById<TextView>(R.id.setpstext)
             stepTextView.text = accelSensorValue.toString()
+
+            //save data to BT variables
+
         }
     }
 }
