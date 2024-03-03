@@ -587,17 +587,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     if (task.isSuccessful) {
                         // Message Sent Successfully
                         Toast.makeText(this, "Data Sent", Toast.LENGTH_SHORT)
+                            .show()
                     } else {
                         // Failed to send message
-                        Toast.makeText(this, "Error", Toast.LENGTH_SHORT)
+                        Toast.makeText(this, "Bluetooth Error", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             } else {
                 // No connected phone found
+                Toast.makeText(this, "Phone not connected", Toast.LENGTH_SHORT)
+                    .show()
             }
         } catch (e: Exception) {
             e.printStackTrace()
             // exceptions
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT)
+                .show()
         }
         // Receive data
         messageClient.addListener(object : MessageClient.OnMessageReceivedListener {
