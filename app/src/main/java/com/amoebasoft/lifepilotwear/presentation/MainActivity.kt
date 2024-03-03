@@ -29,13 +29,12 @@ import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.amoebasoft.lifepilotwear.R
 import com.google.android.gms.tasks.Task
@@ -84,7 +83,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     var x1:Float = 0.0f
     //setting variables
     private var notif: Boolean = true
-    val messageClient: MessageClient = Wearable.getMessageClient(this)
+    private var routine: String = ""
     companion object {
         const val MIN_DISTANCE = 50
         private const val PERMISSION_REQUEST_BODY_SENSORS = 100
@@ -582,14 +581,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
                     break
                 }
             }
-
             if (phoneNodeId != null) {
-                val sendMessageTask: Task<Int> = messageClient.sendMessage(phoneNodeId!!, "/weardata", data)
+                val sendMessageTask: Task<Int> = messageClient.sendMessage(phoneNodeId, "/weardata", data)
                 sendMessageTask.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // Message Sent Successfully
+                        Toast.makeText(this, "Data Sent", Toast.LENGTH_SHORT)
                     } else {
                         // Failed to send message
+                        Toast.makeText(this, "Error", Toast.LENGTH_SHORT)
                     }
                 }
             } else {
@@ -599,12 +599,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             e.printStackTrace()
             // exceptions
         }
-
         // Receive data
         messageClient.addListener(object : MessageClient.OnMessageReceivedListener {
             override fun onMessageReceived(messageEvent: MessageEvent) {
                 val receivedData = String(messageEvent.data, Charsets.UTF_8)
-                // Process received data
+                routine = receivedData
             }
         })
     }
