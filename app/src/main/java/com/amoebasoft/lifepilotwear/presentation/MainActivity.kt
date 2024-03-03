@@ -602,7 +602,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         } catch (e: Exception) {
             e.printStackTrace()
             // exceptions
-            Toast.makeText(this, "Error", Toast.LENGTH_SHORT)
+            Toast.makeText(this, "Error #404", Toast.LENGTH_SHORT)
                 .show()
         }
         // Receive data
