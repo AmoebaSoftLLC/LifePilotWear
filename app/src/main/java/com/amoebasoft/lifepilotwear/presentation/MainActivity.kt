@@ -567,7 +567,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
         return false
     }
-
     fun blueToothSync() {
         val messageClient: MessageClient = Wearable.getMessageClient(this)
         // Send data
